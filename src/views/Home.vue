@@ -26,15 +26,17 @@
               @confirm="confirm(item.id)"
               @cancel="cancel"
             >
-              <a-button 
+              <a-button
                 danger
                 :loading="databaseStore.loading"
-                 :disabled="databaseStore.loading"
-              >Eliminar</a-button>
+                :disabled="databaseStore.loading"
+                >Eliminar</a-button
+              >
             </a-popconfirm>
             <a-button type="primary" @click="router.push(`/editar/${item.id}`)"
               >Editar</a-button
             >
+            <a-button @click="copiarPortapapeles(item.id)">Copiar</a-button>
           </a-space>
         </template>
         <p>{{ item.name }}</p>
@@ -48,6 +50,7 @@ import { useUserStore } from '../stores/user';
 import { useDatabaseStore } from '../stores/database';
 import { useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
+import { async } from '@firebase/util';
 
 const userStore = useUserStore();
 const databaseStore = useDatabaseStore();
@@ -63,5 +66,32 @@ const confirm = async (id) => {
 
 const cancel = () => {
   message.error('No se eliminó 🤦‍♀️');
+};
+
+const copiarPortapapeles = async (id) => {
+  // console.log(id);
+  if (!navigator.clipboard) {
+    return message.error('No se pudo copiar al portapapeles 🤦‍♀️');
+  }
+
+  const path = `${window.location.origin}/${id}`;
+  // console.log(path);
+
+  const err = await navigator.clipboard.writeText(path);
+  // console.log(res)
+  if (err) {
+    message.error('No se pudo copiar al portapapeles 🤦‍♀️');
+  } else {
+    message.success('Se copió con éxito ✔');
+  }
+
+  // navigator.clipboard
+  //   .writeText(path)
+  //   .then(() => {
+  //     message.success('Se copió con éxito ✔');
+  //   })
+  //   .catch((err) => {
+  //     message.error('No se pudo copiar al portapapeles 🤦‍♀️');
+  //   });
 };
 </script>
